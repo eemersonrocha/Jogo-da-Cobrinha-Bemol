@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <!-- Meta tag para responsividade em dispositivos mobile -->
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Jogo da Cobrinha - Versão Mobile</title>
+  <title>Jogo da Cobrinha - Versão Mobile Responsiva com Controles</title>
   <style>
     body {
       margin: 0;
@@ -89,6 +89,18 @@
       display: block;
       background-color: #000;
     }
+    /* Painel de controle (botões de movimento) */
+    #controlPanel {
+      display: none;
+      text-align: center;
+      margin: 10px auto;
+    }
+    #controlPanel button {
+      font-size: 24px;
+      padding: 10px 15px;
+      margin: 5px;
+      cursor: pointer;
+    }
     /* Overlay de fim de jogo / vitória */
     #gameOverScreen {
       display: none;
@@ -148,6 +160,50 @@
       margin-top: 30px;
       cursor: pointer;
     }
+    /* Media query para telas menores (ex.: dispositivos mobile) */
+    @media (max-width: 600px) {
+      #gameContainer {
+        width: 90vw;
+        max-width: 400px; /* Limita para não ficar muito grande */
+        height: calc(90vw * 0.75); /* Mantém a proporção 4:3 (800x600) */
+        margin: 20px auto;
+        border-width: 10px;
+      }
+      canvas {
+        width: 100%;
+        height: 100%;
+      }
+      #scoreBoard {
+        top: -40px;
+        font-size: 18px;
+        padding: 5px 10px;
+      }
+      #backToMenuButton {
+        top: -40px;
+        left: 10px;
+        font-size: 18px;
+        padding: 5px 10px;
+      }
+      #controlPanel button {
+        font-size: 18px;
+        padding: 8px 12px;
+        margin: 4px;
+      }
+      #gameOverScreen h2 {
+        font-size: 32px;
+      }
+      #gameOverScreen label,
+      #gameOverScreen input,
+      #gameOverScreen button {
+        font-size: 18px;
+      }
+      #rankingScreen h2, #rankingList li, #rankingScreen button {
+        font-size: 18px;
+      }
+      #rankingScreen {
+        padding-top: 20px;
+      }
+    }
   </style>
 </head>
 <body>
@@ -177,6 +233,14 @@
     </div>
   </div>
   
+  <!-- Painel de Controle (botões de movimento) -->
+  <div id="controlPanel">
+    <button id="upButton">▲</button><br>
+    <button id="leftButton">◄</button>
+    <button id="downButton">▼</button>
+    <button id="rightButton">►</button>
+  </div>
+  
   <!-- Tela de Ranking -->
   <div id="rankingScreen">
     <h2>Ranking dos melhores</h2>
@@ -190,6 +254,7 @@
     const gameContainer = document.getElementById("gameContainer");
     const rankingScreen = document.getElementById("rankingScreen");
     const gameOverScreen = document.getElementById("gameOverScreen");
+    const controlPanel = document.getElementById("controlPanel");
     
     // Botões
     const playButton = document.getElementById("playButton");
@@ -198,6 +263,12 @@
     const saveScoreButton = document.getElementById("saveScoreButton");
     const backToMenuButton = document.getElementById("backToMenuButton");
     const confirmNameButton = document.getElementById("confirmNameButton");
+    
+    // Botões de controle
+    const upButton = document.getElementById("upButton");
+    const leftButton = document.getElementById("leftButton");
+    const downButton = document.getElementById("downButton");
+    const rightButton = document.getElementById("rightButton");
     
     // Input para nome na tela inicial
     const nameInputContainer = document.getElementById("nameInputContainer");
@@ -265,11 +336,12 @@
       gameWon = false;
       updateScore();
       
-      // Esconde outras telas e exibe a área do jogo
+      // Esconde outras telas e exibe a área do jogo e os controles
       startScreen.style.display = "none";
       rankingScreen.style.display = "none";
       gameContainer.style.display = "block";
       gameOverScreen.style.display = "none";
+      controlPanel.style.display = "block";
       
       // Preenche o campo do fim de jogo com o nome já informado
       endPlayerNameInput.value = playerName;
@@ -431,6 +503,31 @@
       }
     }, false);
     
+    // Eventos para os botões do painel de controle
+    upButton.addEventListener("click", function() {
+      if (direction.y !== 1) { // impede reversão
+        direction = { x: 0, y: -1 };
+      }
+    });
+    
+    downButton.addEventListener("click", function() {
+      if (direction.y !== -1) {
+        direction = { x: 0, y: 1 };
+      }
+    });
+    
+    leftButton.addEventListener("click", function() {
+      if (direction.x !== 1) {
+        direction = { x: -1, y: 0 };
+      }
+    });
+    
+    rightButton.addEventListener("click", function() {
+      if (direction.x !== -1) {
+        direction = { x: 1, y: 0 };
+      }
+    });
+    
     // Botões e suas ações
     // Na tela inicial, ao clicar em "Jogar Agora" exibe o campo para digitar o nome
     playButton.addEventListener("click", function() {
@@ -463,6 +560,7 @@
     backToMenuButton.addEventListener("click", function() {
       clearTimeout(gameTimeout);
       gameContainer.style.display = "none";
+      controlPanel.style.display = "none";
       // Reseta a tela inicial para o estado original
       startScreen.style.display = "flex";
       playButton.style.display = "block";
@@ -477,6 +575,7 @@
       updateRanking(finalName, snake.length - 1);
       gameOverScreen.style.display = "none";
       gameContainer.style.display = "none";
+      controlPanel.style.display = "none";
       startScreen.style.display = "flex";
       // Reseta os elementos da tela inicial
       playButton.style.display = "block";
