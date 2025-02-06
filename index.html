@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <!-- Meta tag para responsividade em dispositivos mobile -->
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Jogo da Cobrinha - Versão Mobile</title>
+  <title>Jogo da Cobrinha - Versão Mobile Responsiva</title>
   <style>
     body {
       margin: 0;
@@ -147,6 +147,51 @@
       padding: 10px 20px;
       margin-top: 30px;
       cursor: pointer;
+    }
+    
+    /* Media query para telas menores (ex.: dispositivos mobile) */
+    @media (max-width: 600px) {
+      /* Reduz o tamanho do container para se adequar à tela do celular */
+      #gameContainer {
+        width: 90vw;
+        max-width: 400px; /* Limita para não ficar muito grande */
+        height: calc(90vw * 0.75); /* Mantém a proporção 4:3 (800x600 = 4:3) */
+        margin: 20px auto;
+        border-width: 10px;
+      }
+      /* Ajusta o canvas para preencher o container */
+      canvas {
+        width: 100%;
+        height: 100%;
+      }
+      /* Reduz o tamanho do score e do botão de voltar */
+      #scoreBoard {
+        top: -40px;
+        font-size: 18px;
+        padding: 5px 10px;
+      }
+      #backToMenuButton {
+        top: -40px;
+        left: 10px;
+        font-size: 18px;
+        padding: 5px 10px;
+      }
+      /* Ajusta os tamanhos dos textos na tela de Game Over */
+      #gameOverScreen h2 {
+        font-size: 32px;
+      }
+      #gameOverScreen label,
+      #gameOverScreen input,
+      #gameOverScreen button {
+        font-size: 18px;
+      }
+      /* Ajusta a tela de Ranking */
+      #rankingScreen h2, #rankingList li, #rankingScreen button {
+        font-size: 18px;
+      }
+      #rankingScreen {
+        padding-top: 20px;
+      }
     }
   </style>
 </head>
