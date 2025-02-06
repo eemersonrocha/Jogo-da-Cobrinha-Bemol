@@ -10,6 +10,9 @@
       margin: 0;
       background-color: #000;
       font-family: Arial, sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
     }
     /* Tela Inicial */
     #startScreen {
@@ -19,6 +22,10 @@
       align-items: center;
       height: 100vh;
       color: #fff;
+      text-align: center;
+      width: 90%;
+      max-width: 500px;
+      margin: auto;
     }
     #startScreen h1 {
       font-size: 48px;
@@ -26,7 +33,7 @@
     }
     #startScreen button {
       font-size: 24px;
-      padding: 10px 20px;
+      padding: 12px 20px;
       margin: 10px;
       cursor: pointer;
     }
@@ -39,12 +46,14 @@
     }
     #nameInputContainer input {
       font-size: 24px;
-      padding: 5px;
+      padding: 8px;
       margin-bottom: 20px;
+      width: 80%;
+      max-width: 300px;
     }
     #nameInputContainer button {
       font-size: 24px;
-      padding: 10px 20px;
+      padding: 12px 20px;
       cursor: pointer;
     }
     /* Container do Jogo com borda azul larga */
@@ -97,8 +106,8 @@
     }
     #controlPanel button {
       font-size: 24px;
-      padding: 10px 15px;
-      margin: 5px;
+      padding: 12px 18px;
+      margin: 8px;
       cursor: pointer;
     }
     /* Overlay de fim de jogo / vitória */
@@ -127,11 +136,13 @@
       margin-bottom: 20px;
     }
     #gameOverScreen input {
-      padding: 5px;
+      padding: 8px;
+      width: 80%;
+      max-width: 300px;
     }
     #gameOverScreen button {
       font-size: 24px;
-      padding: 10px 20px;
+      padding: 12px 20px;
       cursor: pointer;
     }
     /* Tela de Ranking */
@@ -156,7 +167,7 @@
     }
     #rankingScreen button {
       font-size: 24px;
-      padding: 10px 20px;
+      padding: 12px 20px;
       margin-top: 30px;
       cursor: pointer;
     }
@@ -164,8 +175,8 @@
     @media (max-width: 600px) {
       #gameContainer {
         width: 90vw;
-        max-width: 400px; /* Limita para não ficar muito grande */
-        height: calc(90vw * 0.75); /* Mantém a proporção 4:3 (800x600) */
+        max-width: 350px;
+        height: calc(90vw * 0.75);
         margin: 20px auto;
         border-width: 10px;
       }
@@ -175,19 +186,38 @@
       }
       #scoreBoard {
         top: -40px;
-        font-size: 18px;
-        padding: 5px 10px;
+        font-size: 20px;
+        padding: 8px 12px;
       }
       #backToMenuButton {
         top: -40px;
         left: 10px;
-        font-size: 18px;
-        padding: 5px 10px;
+        font-size: 20px;
+        padding: 8px 12px;
       }
       #controlPanel button {
-        font-size: 18px;
-        padding: 8px 12px;
-        margin: 4px;
+        font-size: 24px;
+        padding: 12px 18px;
+        margin: 8px;
+      }
+      #startScreen h1 {
+        font-size: 36px;
+      }
+      #startScreen button {
+        font-size: 24px;
+        padding: 12px 20px;
+        margin: 10px;
+      }
+      #nameInputContainer input {
+        font-size: 24px;
+        padding: 8px;
+        margin-bottom: 20px;
+        width: 80%;
+        max-width: 300px;
+      }
+      #nameInputContainer button {
+        font-size: 24px;
+        padding: 12px 20px;
       }
       #gameOverScreen h2 {
         font-size: 32px;
@@ -195,10 +225,10 @@
       #gameOverScreen label,
       #gameOverScreen input,
       #gameOverScreen button {
-        font-size: 18px;
+        font-size: 24px;
       }
       #rankingScreen h2, #rankingList li, #rankingScreen button {
-        font-size: 18px;
+        font-size: 24px;
       }
       #rankingScreen {
         padding-top: 20px;
@@ -336,7 +366,7 @@
       gameWon = false;
       updateScore();
       
-      // Esconde outras telas e exibe a área do jogo e os controles
+      // Esconde outras telas e exibe a área do jogo, os controles e os botões
       startScreen.style.display = "none";
       rankingScreen.style.display = "none";
       gameContainer.style.display = "block";
@@ -505,23 +535,20 @@
     
     // Eventos para os botões do painel de controle
     upButton.addEventListener("click", function() {
-      if (direction.y !== 1) { // impede reversão
+      if (direction.y !== 1) {
         direction = { x: 0, y: -1 };
       }
     });
-    
     downButton.addEventListener("click", function() {
       if (direction.y !== -1) {
         direction = { x: 0, y: 1 };
       }
     });
-    
     leftButton.addEventListener("click", function() {
       if (direction.x !== 1) {
         direction = { x: -1, y: 0 };
       }
     });
-    
     rightButton.addEventListener("click", function() {
       if (direction.x !== -1) {
         direction = { x: 1, y: 0 };
