@@ -4,9 +4,9 @@
   <meta charset="UTF-8">
   <!-- Meta tag para responsividade -->
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Jogo da Cobrinha - Mobile</title>
+  <title>Jogo da Cobrinha - Mobile Rápido e Preciso</title>
   <style>
-    /* O body agora é um flex container, centralizando seu conteúdo vertical e horizontalmente */
+    /* Centraliza todo o conteúdo vertical e horizontalmente */
     body {
       margin: 0;
       background-color: #000;
@@ -42,7 +42,7 @@
     }
     #nameInputContainer input {
       font-size: 24px;
-      padding: 8px;
+      padding: 10px;
       margin-bottom: 20px;
       width: 80%;
       max-width: 300px;
@@ -52,7 +52,7 @@
       padding: 12px 20px;
       cursor: pointer;
     }
-    /* Container do Jogo com borda azul larga */
+    /* Container do Jogo com borda azul */
     #gameContainer {
       display: none;
       position: relative;
@@ -62,7 +62,7 @@
       border: 20px solid blue;
       box-sizing: content-box;
     }
-    /* Score – quadradinho centralizado na parte superior da borda */
+    /* Score – centralizado na parte superior */
     #scoreBoard {
       position: absolute;
       top: -60px;
@@ -132,7 +132,7 @@
       margin-bottom: 20px;
     }
     #gameOverScreen input {
-      padding: 8px;
+      padding: 10px;
       width: 80%;
       max-width: 300px;
     }
@@ -168,13 +168,12 @@
       cursor: pointer;
     }
     
-    /* Ajustes específicos para telas menores (dispositivos mobile) */
+    /* Ajustes para telas menores */
     @media (max-width: 600px) {
-      /* Diminui ainda mais o container para caber bem na tela */
       #gameContainer {
         width: 90vw;
         max-width: 300px;
-        height: calc(90vw * 0.75); /* mantém proporção 4:3 */
+        height: calc(90vw * 0.75);
         margin: 10px auto;
         border-width: 8px;
       }
@@ -193,13 +192,11 @@
         font-size: 20px;
         padding: 8px 12px;
       }
-      /* Aumenta um pouco os botões do painel de controle */
       #controlPanel button {
-        font-size: 28px;
-        padding: 14px 20px;
-        margin: 10px;
+        font-size: 32px;
+        padding: 16px 24px;
+        margin: 12px;
       }
-      /* Ajusta a tela inicial */
       #startScreen h1 {
         font-size: 36px;
       }
@@ -219,7 +216,6 @@
         font-size: 28px;
         padding: 14px 20px;
       }
-      /* Ajusta os elementos da tela de Game Over */
       #gameOverScreen h2 {
         font-size: 32px;
       }
@@ -228,7 +224,6 @@
       #gameOverScreen button {
         font-size: 28px;
       }
-      /* Ajusta a tela de Ranking */
       #rankingScreen h2, #rankingList li, #rankingScreen button {
         font-size: 28px;
       }
@@ -332,10 +327,10 @@
     let playerName = "Anônimo"; // Nome do jogador (definido no início)
     let gameWon = false; // Flag para vitória
     
-    // Configurações para velocidade dinâmica
-    const baseDelay = 300;      // atraso inicial (ms)
-    const minDelay = 50;        // atraso mínimo
-    const speedIncrement = 10;  // quanto reduzir o atraso por segmento extra
+    // Ajustamos a velocidade para ficar mais rápida e responsiva
+    const baseDelay = 200;      // atraso inicial (ms)
+    const minDelay = 30;        // atraso mínimo
+    const speedIncrement = 15;  // quanto reduzir o atraso por segmento extra
     
     function calculateDelay() {
       return Math.max(minDelay, baseDelay - (snake.length - 1) * speedIncrement);
@@ -516,7 +511,7 @@
         let touchEndY = e.changedTouches[0].clientY;
         let diffX = touchEndX - touchStartX;
         let diffY = touchEndY - touchStartY;
-        // Define um limiar para considerar um swipe
+        // Limiar para considerar um swipe
         if (Math.abs(diffX) > Math.abs(diffY)) {
           // Swipe horizontal
           if (diffX > 30 && direction.x !== -1) {
@@ -535,69 +530,62 @@
       }
     }, false);
     
-    // Eventos para os botões do painel de controle
-    upButton.addEventListener("click", function() {
-      if (direction.y !== 1) {
-        direction = { x: 0, y: -1 };
+    // Eventos para os botões do painel de controle (click e touchstart para resposta imediata)
+    function setDirection(newDir) {
+      // Impede reversão imediata
+      if ((newDir.x === -direction.x && newDir.y === 0) ||
+          (newDir.y === -direction.y && newDir.x === 0)) {
+        return;
       }
-    });
-    downButton.addEventListener("click", function() {
-      if (direction.y !== -1) {
-        direction = { x: 0, y: 1 };
-      }
-    });
-    leftButton.addEventListener("click", function() {
-      if (direction.x !== 1) {
-        direction = { x: -1, y: 0 };
-      }
-    });
-    rightButton.addEventListener("click", function() {
-      if (direction.x !== -1) {
-        direction = { x: 1, y: 0 };
-      }
-    });
+      direction = newDir;
+    }
     
-    // Botões e suas ações
-    // Na tela inicial, ao clicar em "Jogar Agora" exibe o campo para digitar o nome
+    upButton.addEventListener("click", () => setDirection({ x: 0, y: -1 }));
+    upButton.addEventListener("touchstart", (e) => { e.preventDefault(); setDirection({ x: 0, y: -1 }); });
+    
+    downButton.addEventListener("click", () => setDirection({ x: 0, y: 1 }));
+    downButton.addEventListener("touchstart", (e) => { e.preventDefault(); setDirection({ x: 0, y: 1 }); });
+    
+    leftButton.addEventListener("click", () => setDirection({ x: -1, y: 0 }));
+    leftButton.addEventListener("touchstart", (e) => { e.preventDefault(); setDirection({ x: -1, y: 0 }); });
+    
+    rightButton.addEventListener("click", () => setDirection({ x: 1, y: 0 }));
+    rightButton.addEventListener("touchstart", (e) => { e.preventDefault(); setDirection({ x: 1, y: 0 }); });
+    
+    // Botões e suas ações na tela inicial e ranking
     playButton.addEventListener("click", function() {
       playButton.style.display = "none";
       showRankingButton.style.display = "none";
       nameInputContainer.style.display = "flex";
     });
     
-    // Confirma o nome do jogador e inicia o jogo
     confirmNameButton.addEventListener("click", function() {
       const name = playerNameInput.value.trim();
       playerName = name !== "" ? name : "Anônimo";
       startGame();
     });
     
-    // Exibe a tela de Ranking
     showRankingButton.addEventListener("click", function() {
       startScreen.style.display = "none";
       rankingScreen.style.display = "block";
       updateRankingDisplay();
     });
     
-    // Volta da tela de Ranking para a tela inicial
     backButton.addEventListener("click", function() {
       rankingScreen.style.display = "none";
       startScreen.style.display = "flex";
     });
     
-    // Botão "Voltar ao Menu" durante o jogo
     backToMenuButton.addEventListener("click", function() {
       clearTimeout(gameTimeout);
       gameContainer.style.display = "none";
       controlPanel.style.display = "none";
-      // Reseta a tela inicial para o estado original
       startScreen.style.display = "flex";
       playButton.style.display = "block";
       showRankingButton.style.display = "block";
       nameInputContainer.style.display = "none";
     });
     
-    // Ao clicar em "Salvar Score e Voltar" na tela de fim de jogo/vitória:
     saveScoreButton.addEventListener("click", function() {
       const endName = endPlayerNameInput.value.trim();
       const finalName = endName !== "" ? endName : playerName;
@@ -606,7 +594,6 @@
       gameContainer.style.display = "none";
       controlPanel.style.display = "none";
       startScreen.style.display = "flex";
-      // Reseta os elementos da tela inicial
       playButton.style.display = "block";
       showRankingButton.style.display = "block";
       nameInputContainer.style.display = "none";
