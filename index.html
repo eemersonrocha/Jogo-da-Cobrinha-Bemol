@@ -2,10 +2,11 @@
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8">
-  <!-- Meta tag para responsividade em dispositivos mobile -->
+  <!-- Meta tag para responsividade -->
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Jogo da Cobrinha - Versão Mobile Responsiva com Controles</title>
+  <title>Jogo da Cobrinha - Mobile</title>
   <style>
+    /* O body agora é um flex container, centralizando seu conteúdo vertical e horizontalmente */
     body {
       margin: 0;
       background-color: #000;
@@ -13,19 +14,14 @@
       display: flex;
       flex-direction: column;
       align-items: center;
+      justify-content: center;
+      min-height: 100vh;
     }
     /* Tela Inicial */
     #startScreen {
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
-      height: 100vh;
-      color: #fff;
       text-align: center;
       width: 90%;
       max-width: 500px;
-      margin: auto;
     }
     #startScreen h1 {
       font-size: 48px;
@@ -62,7 +58,7 @@
       position: relative;
       width: 800px;
       height: 600px;
-      margin: 50px auto;
+      margin: 30px auto;
       border: 20px solid blue;
       box-sizing: content-box;
     }
@@ -80,7 +76,7 @@
       font-size: 24px;
       z-index: 10;
     }
-    /* Botão de voltar ao menu principal, posicionado à esquerda na mesma altura do score */
+    /* Botão de voltar ao menu */
     #backToMenuButton {
       position: absolute;
       top: -60px;
@@ -102,12 +98,12 @@
     #controlPanel {
       display: none;
       text-align: center;
-      margin: 10px auto;
+      margin: 20px auto;
     }
     #controlPanel button {
-      font-size: 24px;
-      padding: 12px 18px;
-      margin: 8px;
+      font-size: 28px;
+      padding: 14px 20px;
+      margin: 10px;
       cursor: pointer;
     }
     /* Overlay de fim de jogo / vitória */
@@ -171,14 +167,16 @@
       margin-top: 30px;
       cursor: pointer;
     }
-    /* Media query para telas menores (ex.: dispositivos mobile) */
+    
+    /* Ajustes específicos para telas menores (dispositivos mobile) */
     @media (max-width: 600px) {
+      /* Diminui ainda mais o container para caber bem na tela */
       #gameContainer {
         width: 90vw;
-        max-width: 350px;
-        height: calc(90vw * 0.75);
-        margin: 20px auto;
-        border-width: 10px;
+        max-width: 300px;
+        height: calc(90vw * 0.75); /* mantém proporção 4:3 */
+        margin: 10px auto;
+        border-width: 8px;
       }
       canvas {
         width: 100%;
@@ -195,40 +193,44 @@
         font-size: 20px;
         padding: 8px 12px;
       }
+      /* Aumenta um pouco os botões do painel de controle */
       #controlPanel button {
-        font-size: 24px;
-        padding: 12px 18px;
-        margin: 8px;
+        font-size: 28px;
+        padding: 14px 20px;
+        margin: 10px;
       }
+      /* Ajusta a tela inicial */
       #startScreen h1 {
         font-size: 36px;
       }
       #startScreen button {
-        font-size: 24px;
-        padding: 12px 20px;
+        font-size: 28px;
+        padding: 14px 20px;
         margin: 10px;
       }
       #nameInputContainer input {
-        font-size: 24px;
-        padding: 8px;
+        font-size: 28px;
+        padding: 10px;
         margin-bottom: 20px;
-        width: 80%;
-        max-width: 300px;
+        width: 90%;
+        max-width: 280px;
       }
       #nameInputContainer button {
-        font-size: 24px;
-        padding: 12px 20px;
+        font-size: 28px;
+        padding: 14px 20px;
       }
+      /* Ajusta os elementos da tela de Game Over */
       #gameOverScreen h2 {
         font-size: 32px;
       }
       #gameOverScreen label,
       #gameOverScreen input,
       #gameOverScreen button {
-        font-size: 24px;
+        font-size: 28px;
       }
+      /* Ajusta a tela de Ranking */
       #rankingScreen h2, #rankingList li, #rankingScreen button {
-        font-size: 24px;
+        font-size: 28px;
       }
       #rankingScreen {
         padding-top: 20px;
