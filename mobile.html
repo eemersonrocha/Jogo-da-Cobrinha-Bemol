@@ -1,0 +1,488 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <!-- Meta tag para responsividade em dispositivos mobile -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Jogo da Cobrinha - Versão Mobile</title>
+  <style>
+    body {
+      margin: 0;
+      background-color: #000;
+      font-family: Arial, sans-serif;
+    }
+    /* Tela Inicial */
+    #startScreen {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      color: #fff;
+    }
+    #startScreen h1 {
+      font-size: 48px;
+      margin-bottom: 20px;
+    }
+    #startScreen button {
+      font-size: 24px;
+      padding: 10px 20px;
+      margin: 10px;
+      cursor: pointer;
+    }
+    /* Container para input de nome na tela inicial */
+    #nameInputContainer {
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      margin-top: 20px;
+    }
+    #nameInputContainer input {
+      font-size: 24px;
+      padding: 5px;
+      margin-bottom: 20px;
+    }
+    #nameInputContainer button {
+      font-size: 24px;
+      padding: 10px 20px;
+      cursor: pointer;
+    }
+    /* Container do Jogo com borda azul larga */
+    #gameContainer {
+      display: none;
+      position: relative;
+      width: 800px;
+      height: 600px;
+      margin: 50px auto;
+      border: 20px solid blue;
+      box-sizing: content-box;
+    }
+    /* Score – quadradinho centralizado na parte superior da borda */
+    #scoreBoard {
+      position: absolute;
+      top: -60px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #fff;
+      color: #000;
+      padding: 10px 20px;
+      border: 2px solid blue;
+      border-radius: 8px;
+      font-size: 24px;
+      z-index: 10;
+    }
+    /* Botão de voltar ao menu principal, posicionado à esquerda na mesma altura do score */
+    #backToMenuButton {
+      position: absolute;
+      top: -60px;
+      left: 20px;
+      background: #fff;
+      color: #000;
+      padding: 10px 20px;
+      border: 2px solid blue;
+      border-radius: 8px;
+      font-size: 24px;
+      z-index: 10;
+      cursor: pointer;
+    }
+    canvas {
+      display: block;
+      background-color: #000;
+    }
+    /* Overlay de fim de jogo / vitória */
+    #gameOverScreen {
+      display: none;
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.7);
+      color: #fff;
+      z-index: 20;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+    }
+    #gameOverScreen h2 {
+      font-size: 48px;
+      margin-bottom: 20px;
+    }
+    #gameOverScreen label,
+    #gameOverScreen input {
+      font-size: 24px;
+      margin-bottom: 20px;
+    }
+    #gameOverScreen input {
+      padding: 5px;
+    }
+    #gameOverScreen button {
+      font-size: 24px;
+      padding: 10px 20px;
+      cursor: pointer;
+    }
+    /* Tela de Ranking */
+    #rankingScreen {
+      display: none;
+      color: #fff;
+      text-align: center;
+      padding-top: 50px;
+      height: 100vh;
+    }
+    #rankingScreen h2 {
+      font-size: 36px;
+      margin-bottom: 20px;
+    }
+    #rankingList {
+      list-style: none;
+      padding: 0;
+      font-size: 24px;
+    }
+    #rankingList li {
+      margin: 10px 0;
+    }
+    #rankingScreen button {
+      font-size: 24px;
+      padding: 10px 20px;
+      margin-top: 30px;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <!-- Tela Inicial -->
+  <div id="startScreen">
+    <h1>Jogo da Cobrinha</h1>
+    <button id="playButton">Jogar Agora</button>
+    <button id="showRankingButton">Ranking dos melhores</button>
+    <div id="nameInputContainer">
+      <label for="playerNameInput">Digite seu nome:</label>
+      <input type="text" id="playerNameInput" placeholder="Seu nome">
+      <button id="confirmNameButton">Confirmar</button>
+    </div>
+  </div>
+  
+  <!-- Container do Jogo -->
+  <div id="gameContainer">
+    <div id="scoreBoard">Score: 0</div>
+    <button id="backToMenuButton">Voltar ao Menu</button>
+    <canvas id="gameCanvas" width="800" height="600"></canvas>
+    <!-- Overlay de fim de jogo / vitória -->
+    <div id="gameOverScreen">
+      <h2 id="endMessage">Game Over</h2>
+      <label for="endPlayerName">Digite seu nome:</label>
+      <input type="text" id="endPlayerName" placeholder="Seu nome">
+      <button id="saveScoreButton">Salvar Score e Voltar</button>
+    </div>
+  </div>
+  
+  <!-- Tela de Ranking -->
+  <div id="rankingScreen">
+    <h2>Ranking dos melhores</h2>
+    <ol id="rankingList"></ol>
+    <button id="backButton">Voltar</button>
+  </div>
+  
+  <script>
+    // Elementos de tela
+    const startScreen = document.getElementById("startScreen");
+    const gameContainer = document.getElementById("gameContainer");
+    const rankingScreen = document.getElementById("rankingScreen");
+    const gameOverScreen = document.getElementById("gameOverScreen");
+    
+    // Botões
+    const playButton = document.getElementById("playButton");
+    const showRankingButton = document.getElementById("showRankingButton");
+    const backButton = document.getElementById("backButton");
+    const saveScoreButton = document.getElementById("saveScoreButton");
+    const backToMenuButton = document.getElementById("backToMenuButton");
+    const confirmNameButton = document.getElementById("confirmNameButton");
+    
+    // Input para nome na tela inicial
+    const nameInputContainer = document.getElementById("nameInputContainer");
+    const playerNameInput = document.getElementById("playerNameInput");
+    
+    // Elementos do jogo
+    const scoreBoard = document.getElementById("scoreBoard");
+    const canvas = document.getElementById("gameCanvas");
+    const ctx = canvas.getContext("2d");
+    const endMessage = document.getElementById("endMessage");
+    const endPlayerNameInput = document.getElementById("endPlayerName");
+    
+    // Imagens
+    const coinImage = new Image();
+    coinImage.src = "coin.png";
+    coinImage.onerror = () => console.error("Erro ao carregar coin.png.");
+    
+    const pigImage = new Image();
+    pigImage.src = "pig.png";
+    pigImage.onerror = () => console.error("Erro ao carregar pig.png.");
+    
+    // Configurações da grade
+    const GRID_SIZE = 40;
+    const GRID_WIDTH = 20;
+    const GRID_HEIGHT = 15;
+    
+    // Variáveis do jogo
+    let snake, direction, coin, gameOver, gameTimeout;
+    let playerName = "Anônimo"; // Nome do jogador (definido no início)
+    let gameWon = false; // Flag para vitória
+    
+    // Configurações para velocidade dinâmica
+    const baseDelay = 300;      // atraso inicial (ms)
+    const minDelay = 50;        // atraso mínimo
+    const speedIncrement = 10;  // quanto reduzir o atraso por segmento extra
+    
+    function calculateDelay() {
+      return Math.max(minDelay, baseDelay - (snake.length - 1) * speedIncrement);
+    }
+    
+    // Atualiza o score (pontos = snake.length - 1)
+    function updateScore() {
+      scoreBoard.textContent = "Score: " + (snake.length - 1);
+    }
+    
+    // Gera uma posição aleatória para a moeda que não esteja ocupada pela snake
+    function spawnCoin() {
+      let pos;
+      while (true) {
+        pos = {
+          x: Math.floor(Math.random() * GRID_WIDTH),
+          y: Math.floor(Math.random() * GRID_HEIGHT)
+        };
+        if (!snake.some(segment => segment.x === pos.x && segment.y === pos.y)) break;
+      }
+      return pos;
+    }
+    
+    // Inicia (ou reinicia) o jogo
+    function startGame() {
+      snake = [{ x: Math.floor(GRID_WIDTH / 2), y: Math.floor(GRID_HEIGHT / 2) }];
+      direction = { x: 1, y: 0 };
+      coin = spawnCoin();
+      gameOver = false;
+      gameWon = false;
+      updateScore();
+      
+      // Esconde outras telas e exibe a área do jogo
+      startScreen.style.display = "none";
+      rankingScreen.style.display = "none";
+      gameContainer.style.display = "block";
+      gameOverScreen.style.display = "none";
+      
+      // Preenche o campo do fim de jogo com o nome já informado
+      endPlayerNameInput.value = playerName;
+      
+      // Inicia o loop do jogo
+      setTimeout(gameLoop, calculateDelay());
+    }
+    
+    // Loop do jogo com setTimeout (velocidade dinâmica)
+    function gameLoop() {
+      if (gameOver) return;
+      
+      const head = snake[0];
+      const newHead = {
+        x: (head.x + direction.x + GRID_WIDTH) % GRID_WIDTH,
+        y: (head.y + direction.y + GRID_HEIGHT) % GRID_HEIGHT
+      };
+      
+      // Verifica colisão com o próprio corpo
+      if (snake.some(segment => segment.x === newHead.x && segment.y === newHead.y)) {
+        gameOver = true;
+        showEndScreen(false); // Game Over
+        return;
+      }
+      
+      snake.unshift(newHead);
+      if (newHead.x === coin.x && newHead.y === coin.y) {
+        coin = spawnCoin();
+      } else {
+        snake.pop();
+      }
+      
+      updateScore();
+      
+      // Verifica condição de vitória: 50 pontos ou mais
+      if (snake.length - 1 >= 50) {
+        gameWon = true;
+        gameOver = true;
+        showEndScreen(true); // Vitória
+        return;
+      }
+      
+      draw();
+      
+      gameTimeout = setTimeout(gameLoop, calculateDelay());
+    }
+    
+    // Desenha o jogo no canvas
+    function draw() {
+      ctx.fillStyle = "#000";
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      
+      if (coinImage.complete && coinImage.naturalWidth !== 0) {
+        ctx.drawImage(coinImage, coin.x * GRID_SIZE, coin.y * GRID_SIZE, GRID_SIZE, GRID_SIZE);
+      } else {
+        ctx.fillStyle = "#FFD700";
+        ctx.fillRect(coin.x * GRID_SIZE, coin.y * GRID_SIZE, GRID_SIZE, GRID_SIZE);
+      }
+      
+      snake.forEach(segment => {
+        if (pigImage.complete && pigImage.naturalWidth !== 0) {
+          ctx.drawImage(pigImage, segment.x * GRID_SIZE, segment.y * GRID_SIZE, GRID_SIZE, GRID_SIZE);
+        } else {
+          ctx.fillStyle = "#FF69B4";
+          ctx.fillRect(segment.x * GRID_SIZE, segment.y * GRID_SIZE, GRID_SIZE, GRID_SIZE);
+        }
+      });
+    }
+    
+    // Exibe o overlay de fim de jogo ou vitória
+    function showEndScreen(won) {
+      clearTimeout(gameTimeout);
+      if (won) {
+        endMessage.textContent = "Parabéns, você venceu!";
+      } else {
+        endMessage.textContent = "Game Over";
+      }
+      gameOverScreen.style.display = "flex";
+    }
+    
+    // Funções para manipulação do ranking com localStorage
+    function loadRanking() {
+      const ranking = localStorage.getItem("ranking");
+      return ranking ? JSON.parse(ranking) : [];
+    }
+    
+    function saveRankingData(ranking) {
+      localStorage.setItem("ranking", JSON.stringify(ranking));
+    }
+    
+    function updateRanking(name, score) {
+      let ranking = loadRanking();
+      ranking.push({ name, score });
+      ranking.sort((a, b) => b.score - a.score);
+      if (ranking.length > 5) ranking = ranking.slice(0, 5);
+      saveRankingData(ranking);
+    }
+    
+    function updateRankingDisplay() {
+      const ranking = loadRanking();
+      const rankingList = document.getElementById("rankingList");
+      rankingList.innerHTML = "";
+      if (ranking.length === 0) {
+        rankingList.innerHTML = "<li>Nenhum registro</li>";
+      } else {
+        ranking.forEach((entry, index) => {
+          const li = document.createElement("li");
+          li.textContent = `${index + 1}. ${entry.name} – ${entry.score}`;
+          rankingList.appendChild(li);
+        });
+      }
+    }
+    
+    // Eventos de teclado para controle do jogo (para desktops)
+    window.addEventListener("keydown", function(e) {
+      if (e.key === "ArrowUp" && direction.y !== 1) {
+        direction = { x: 0, y: -1 };
+      } else if (e.key === "ArrowDown" && direction.y !== -1) {
+        direction = { x: 0, y: 1 };
+      } else if (e.key === "ArrowLeft" && direction.x !== 1) {
+        direction = { x: -1, y: 0 };
+      } else if (e.key === "ArrowRight" && direction.x !== -1) {
+        direction = { x: 1, y: 0 };
+      }
+    });
+    
+    // Eventos de toque para dispositivos mobile (swipe para controlar a direção)
+    let touchStartX = 0;
+    let touchStartY = 0;
+    canvas.addEventListener("touchstart", function(e) {
+      if (e.touches.length > 0) {
+        touchStartX = e.touches[0].clientX;
+        touchStartY = e.touches[0].clientY;
+      }
+    }, false);
+    
+    canvas.addEventListener("touchend", function(e) {
+      if (e.changedTouches.length > 0) {
+        let touchEndX = e.changedTouches[0].clientX;
+        let touchEndY = e.changedTouches[0].clientY;
+        let diffX = touchEndX - touchStartX;
+        let diffY = touchEndY - touchStartY;
+        // Define um limiar para considerar um swipe
+        if (Math.abs(diffX) > Math.abs(diffY)) {
+          // Swipe horizontal
+          if (diffX > 30 && direction.x !== -1) {
+            direction = { x: 1, y: 0 };
+          } else if (diffX < -30 && direction.x !== 1) {
+            direction = { x: -1, y: 0 };
+          }
+        } else {
+          // Swipe vertical
+          if (diffY > 30 && direction.y !== -1) {
+            direction = { x: 0, y: 1 };
+          } else if (diffY < -30 && direction.y !== 1) {
+            direction = { x: 0, y: -1 };
+          }
+        }
+      }
+    }, false);
+    
+    // Botões e suas ações
+    // Na tela inicial, ao clicar em "Jogar Agora" exibe o campo para digitar o nome
+    playButton.addEventListener("click", function() {
+      playButton.style.display = "none";
+      showRankingButton.style.display = "none";
+      nameInputContainer.style.display = "flex";
+    });
+    
+    // Confirma o nome do jogador e inicia o jogo
+    confirmNameButton.addEventListener("click", function() {
+      const name = playerNameInput.value.trim();
+      playerName = name !== "" ? name : "Anônimo";
+      startGame();
+    });
+    
+    // Exibe a tela de Ranking
+    showRankingButton.addEventListener("click", function() {
+      startScreen.style.display = "none";
+      rankingScreen.style.display = "block";
+      updateRankingDisplay();
+    });
+    
+    // Volta da tela de Ranking para a tela inicial
+    backButton.addEventListener("click", function() {
+      rankingScreen.style.display = "none";
+      startScreen.style.display = "flex";
+    });
+    
+    // Botão "Voltar ao Menu" durante o jogo
+    backToMenuButton.addEventListener("click", function() {
+      clearTimeout(gameTimeout);
+      gameContainer.style.display = "none";
+      // Reseta a tela inicial para o estado original
+      startScreen.style.display = "flex";
+      playButton.style.display = "block";
+      showRankingButton.style.display = "block";
+      nameInputContainer.style.display = "none";
+    });
+    
+    // Ao clicar em "Salvar Score e Voltar" na tela de fim de jogo/vitória:
+    saveScoreButton.addEventListener("click", function() {
+      const endName = endPlayerNameInput.value.trim();
+      const finalName = endName !== "" ? endName : playerName;
+      updateRanking(finalName, snake.length - 1);
+      gameOverScreen.style.display = "none";
+      gameContainer.style.display = "none";
+      startScreen.style.display = "flex";
+      // Reseta os elementos da tela inicial
+      playButton.style.display = "block";
+      showRankingButton.style.display = "block";
+      nameInputContainer.style.display = "none";
+    });
+  </script>
+</body>
+</html>
